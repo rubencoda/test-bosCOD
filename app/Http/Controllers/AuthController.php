@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -13,15 +18,47 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
+        try {
+            $validatedData = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ], [
+                'email.required' => 'Email tidak boleh kosong',
+                'email.email' => 'Gunakan format email dengan benar',
+                'password.required' => 'Password tidak boleh kosong',
+            ]);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            $credentials = $request->only('email', 'password');
+
+            if (! $token = auth()->attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            $refreshToken = Str::random(60);
+
+            $user = Auth::user();
+            $user->refresh_token = $refreshToken;
+            $user->save();
+
+            // $refreshToken = JWTAuth::parseToken()->refresh($token);
+
+            return response()->json([
+                // 'refreshToken' => $refreshToken,
+                'name' => $user->name,
+                'email' => $user->email,
+                'accessToken' => $token,
+                'refreshToken' => $refreshToken,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Error Token'], 401);
+        } catch (\Throwable $e) {
+            //throw $th;
+            return response()->json(['error' => 'Login failed'], 500);
         }
-
-        return $this->respondWithToken($token);
     }
 
     /**
@@ -51,9 +88,29 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh()
+    public function refresh(Request $request)
     {
-        return $this->respondWithToken(auth()->refresh());
+        $providedRefreshToken = $request->input('refreshToken');
+
+        $user = User::findByRefreshToken($providedRefreshToken);
+
+        if (!$user) {
+            return response()->json(['error' => 'Invalid refresh token'], 401);
+        }
+
+        try {
+            $newToken = auth()->refresh();
+            $newRefreshToken = Str::random(60);
+            $user->refresh_token = $newRefreshToken;
+            $user->save();
+
+            return response()->json([
+                'accessToken' => $newToken,
+                'refreshToken' => $newRefreshToken,
+            ]);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Failed to refresh token'], 401);
+        }
     }
 
     /**

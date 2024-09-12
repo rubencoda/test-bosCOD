@@ -21,6 +21,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'refresh_token'
     ];
 
     /**
@@ -64,5 +65,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public static function findByRefreshToken($refreshToken)
+    {
+        return self::where('refresh_token', $refreshToken)->first();
     }
 }
