@@ -15,14 +15,16 @@ class BankSeeder extends Seeder
     {
         DB::table('banks')->insert(
             [
-                'name' => 'BCA',
-            ],
-            [
-                'name' => 'BNI',
-            ],
-            [
-                'name' => 'Mandiri',
-            ],
+                [
+                    'name' => 'BCA',
+                ],
+                [
+                    'name' => 'BNI',
+                ],
+                [
+                    'name' => 'Mandiri',
+                ],
+            ]
         );
     }
 }

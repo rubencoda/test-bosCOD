@@ -71,4 +71,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return self::where('refresh_token', $refreshToken)->first();
     }
+
+
+    public function getTransaksi()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }

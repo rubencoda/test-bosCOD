@@ -11,5 +11,16 @@ class Bank extends Model
 
     protected $fillable = [
         'name',
+        'biaya_admin'
     ];
+
+    public function getRekening()
+    {
+        return $this->hasOne(Rekening::class);
+    }
+
+    public static function getBank($name)
+    {
+        return self::where('name', 'like', "%{$name}%")->first();
+    }
 }

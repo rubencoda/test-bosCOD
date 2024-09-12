@@ -13,4 +13,9 @@ class Rekening extends Model
         'bank_id',
         'no_rekening',
     ];
+
+    public function getBank()
+    {
+        return $this->hasOne(Bank::class, 'bank_id', 'id');
+    }
 }
