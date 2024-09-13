@@ -42,14 +42,12 @@ class AuthController extends Controller
             $user->refresh_token = $refreshToken;
             $user->save();
 
-            // $refreshToken = JWTAuth::parseToken()->refresh($token);
-
             return response()->json([
-                // 'refreshToken' => $refreshToken,
                 'name' => $user->name,
                 'email' => $user->email,
                 'accessToken' => $token,
                 'refreshToken' => $refreshToken,
+                'status' => 200,
             ], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -107,7 +105,9 @@ class AuthController extends Controller
             return response()->json([
                 'accessToken' => $newToken,
                 'refreshToken' => $newRefreshToken,
-            ]);
+                'message' => 'Refresh Token Berhasil',
+                'status' => 200,
+            ], 200);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Failed to refresh token'], 401);
         }

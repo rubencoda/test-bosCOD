@@ -34,3 +34,5 @@ Berikut adalah step by step untuk melakukan instalasi project
 
 [Link untuk ERD](https://whimsical.com/erd-bos-cod-XUhk1Kbg6oUXno1hJ8G2Rn)
 
+[Link Dokumentasi API](https://documenter.getpostman.com/view/19354202/2sAXqng58d)
+

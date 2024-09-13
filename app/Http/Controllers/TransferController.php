@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TransferController extends Controller
 {
@@ -79,12 +80,22 @@ class TransferController extends Controller
                 'biaya_admin' => (string) intval($bank_pengirim->biaya_admin),
                 'total_transfer' => (string) $total_transfer,
                 'bank_perantara' => $bank_pengirim->name,
-                'berlaku_hingga' => $berlaku_hingga
+                'rekening_perantara' => $bank_pengirim->getRekening->no_rekening,
+                'berlaku_hingga' => $berlaku_hingga,
+                'status' => 200,
             ], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
+    }
+
+    public function transfer()
+    {
+        $bank = Bank::all();
+        return view('transfer', [
+            'bank' => $bank,
+        ]);
     }
 }

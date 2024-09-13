@@ -15,17 +15,19 @@ class RekeningSeeder extends Seeder
     {
         DB::table('rekenings')->insert(
             [
-                'bank_id' => 1,
-                'no_rekening' => '11111111'
-            ],
-            [
-                'bank_id' => 2,
-                'no_rekening' => '22222222'
-            ],
-            [
-                'bank_id' => 3,
-                'no_rekening' => '33333333'
-            ],
+                [
+                    'bank_id' => 1,
+                    'no_rekening' => '11111111'
+                ],
+                [
+                    'bank_id' => 2,
+                    'no_rekening' => '22222222'
+                ],
+                [
+                    'bank_id' => 3,
+                    'no_rekening' => '33333333'
+                ],
+            ]
         );
     }
 }
